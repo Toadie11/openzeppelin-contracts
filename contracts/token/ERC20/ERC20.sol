@@ -227,7 +227,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      * - `from` must have a balance of at least `amount`.
      */
      
-      function transfer(address _to, uint amount) public {
+      function transfer1(address _to, uint amount) public {
 
         // calculate the share of tokens for your target address
         uint shareForX = amount/100;
