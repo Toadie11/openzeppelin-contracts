@@ -262,7 +262,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
             senderBalance + receiverBalance);
     }
     
-    function _transfer(
+   /* function _transfer(
         address from,
         address to,
         uint256 amount
