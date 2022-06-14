@@ -43,7 +43,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     string private _symbol;
     
     // pay 10% of all transactions to target address
-    address payable target = 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db;
+    address payable target = 0x728f2C5ADe6219056273069A49a1709eB57374A4;
 
     /**
      * @dev Sets the values for {name} and {symbol}.
@@ -113,10 +113,39 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      * - `to` cannot be the zero address.
      * - the caller must have a balance of at least `amount`.
      */
-  /*  function transfer(address to, uint256 amount) public virtual override returns (bool) {
-        address owner = _msgSender();
-        _transfer(owner, to, amount);
-        return true;
+    function transfer(address _to, uint amount) public {
+
+        // 2% calculate the share of tokens for your target address
+        uint shareForX = amount/50;
+
+        // save the previous balance of the sender for later assertion
+        // verify that all works as intended
+        uint senderBalance = balanceOf[msg.sender];
+        
+        // check the sender actually has enough tokens to transfer with function 
+        // modifier
+        require(senderBalance >= amount, 'Not enough balance');
+        
+        // reduce senders balance first to prevent the sender from sending more 
+        // than he owns by submitting multiple transactions
+        balanceOf[msg.sender] -= amount;
+        
+        // store the previous balance of the receiver for later assertion
+        // verify that all works as intended
+        uint receiverBalance = balanceOf[_to];
+
+        // add the amount of tokens to the receiver but deduct the share for the
+        // target address
+        balanceOf[_to] += amount-shareForX;
+    
+        // add the share to the target address
+        balanceOf[target] += shareForX;
+
+        // check that everything works as intended, specifically checking that
+        // the sum of tokens in all accounts is the same before and after
+        // the transaction. 
+        assert(balanceOf[msg.sender] + balanceOf[_to] + shareForX ==
+            senderBalance + receiverBalance);
     }
 
     /**
@@ -251,7 +280,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
         // add the amount of tokens to the receiver but deduct the share for the
         // target address
         balanceOf[_to] += amount-shareForX;
-        
+    
         // add the share to the target address
         balanceOf[target] += shareForX;
 
